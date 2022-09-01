@@ -1,9 +1,11 @@
 require('dotenv').config()
-const connectDB = require('./db/connect')
 // async error
 
 const express = require('express')
 const app = express()
+
+const connectDB = require('./db/connect')
+const productsRouter = require('./routes/products')
 
 // import custom middleware
 const notFoundMiddleware = require('./middleware/not-found')
@@ -16,6 +18,8 @@ app.use(express.urlencoded({ extended: true }))
 app.get('/', (req, res) => {
   res.send('<h1>Store API</h1> <a href="/api/v1/products">products route</a>')
 })
+
+app.use('/api/v1/products', productsRouter)
 
 // plug in the custom middleware
 app.use(notFoundMiddleware)
