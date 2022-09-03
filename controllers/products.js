@@ -5,7 +5,7 @@ const getAllProductsStatic = async (req, res) => {
   res.status(200).json({ products })
 }
 const getAllProducts = async (req, res) => {
-  const { featured, company, name, sort } = req.query
+  const { featured, company, name, sort, fields } = req.query
   const queryObject = {}
   if (featured) {
     queryObject.featured = featured === 'true' ? true : false
@@ -20,12 +20,19 @@ const getAllProducts = async (req, res) => {
   let result = Product.find(queryObject)
   if (sort) {
     const sortList = sort.split(',').join(' ')
+    // sort() from mongoose
     result = result.sort(sortList)
   } else {
     // if user doesn't specify sort value, sort the results by createdAt
     result = result.sort('createdAt')
   }
-  // result should be a promise at this point
+
+  if (fields) {
+    const fieldsList = fields.split(',').join(' ')
+    // select() from mongoose
+    result = result.select(fieldsList)
+  }
+  // only await the result here
   const products = await result
 
   res.status(200).json({ products, nbHits: products.length })
